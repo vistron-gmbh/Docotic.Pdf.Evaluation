@@ -20,9 +20,11 @@ namespace BitMiracle.Docotic.Pdf.Samples
 
             const string PathToFile = "ExtractPageObjects.png";
 
-            using (var pdf = new PdfDocument(@"..\Sample Data\gmail-cheat-sheet.pdf"))
+            //using (var pdf = new PdfDocument(@"..\Sample Data\gmail-cheat-sheet.pdf"))
+            using (var pdf = new PdfDocument(@"..\Sample Data\VistronCustomerSampleOne.pdf"))
             {
                 PdfPage page = pdf.Pages[0];
+                string templateLayerName = "artwork";
 
                 const float TargetResolution = 300;
                 double scaleFactor = TargetResolution / page.Resolution;
@@ -42,19 +44,24 @@ namespace BitMiracle.Docotic.Pdf.Samples
 
                         foreach (PdfPageObject obj in page.GetObjects())
                         {
-                            switch (obj.Type)
+                            // Only extract objects from a certain layer of the Page
+                            if (obj.Layer?.Name.Equals(templateLayerName) ?? false)
                             {
-                                case PdfPageObjectType.Text:
-                                    drawText(gr, (PdfTextData)obj, userUnit);
-                                    break;
 
-                                case PdfPageObjectType.Image:
-                                    drawImage(gr, (PdfPaintedImage)obj, userUnit);
-                                    break;
+                                switch (obj.Type)
+                                {
+                                    case PdfPageObjectType.Text:
+                                        drawText(gr, (PdfTextData)obj, userUnit);
+                                        break;
 
-                                case PdfPageObjectType.Path:
-                                    drawPath(gr, (PdfPath)obj, userUnit);
-                                    break;
+                                    case PdfPageObjectType.Image:
+                                        drawImage(gr, (PdfPaintedImage)obj, userUnit);
+                                        break;
+
+                                    case PdfPageObjectType.Path:
+                                        drawPath(gr, (PdfPath)obj, userUnit);
+                                        break;
+                                }
                             }
                         }
                     }
